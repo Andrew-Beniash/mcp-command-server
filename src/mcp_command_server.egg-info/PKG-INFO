@@ -5,3 +5,12 @@ Summary: MCP Command Server with Security Layer
 Requires-Python: >=3.8
 Requires-Dist: pytest>=7.0
 Requires-Dist: pytest-asyncio
+Requires-Dist: mcp>=1.2.0
+Requires-Dist: aiofiles>=23.2.1
+Provides-Extra: test
+Requires-Dist: pytest>=7.0; extra == "test"
+Requires-Dist: pytest-asyncio; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-timeout; extra == "test"
+Requires-Dist: pytest-xdist; extra == "test"
+Requires-Dist: coverage; extra == "test"

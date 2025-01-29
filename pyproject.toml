@@ -10,6 +10,8 @@ requires-python = ">=3.8"
 dependencies = [
     "pytest>=7.0",
     "pytest-asyncio",
+    "mcp>=1.2.0",
+    "aiofiles>=23.2.1",
 ]
 
 [tool.pytest.ini_options]
@@ -34,3 +36,27 @@ test = [
     "pytest-xdist",
     "coverage",
 ]
+
+# Adding linting and type checking configurations
+[tool.mypy]
+python_version = "3.8"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pylint.messages_control]
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "C0330",  # wrong-hanging-indentation
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3

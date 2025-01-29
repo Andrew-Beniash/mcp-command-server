@@ -1,2 +1,12 @@
 pytest>=7.0
 pytest-asyncio
+mcp>=1.2.0
+aiofiles>=23.2.1
+
+[test]
+pytest>=7.0
+pytest-asyncio
+pytest-cov
+pytest-timeout
+pytest-xdist
+coverage
