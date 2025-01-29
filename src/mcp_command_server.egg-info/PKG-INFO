@@ -1,0 +1,7 @@
+Metadata-Version: 2.2
+Name: mcp-command-server
+Version: 0.1.0
+Summary: MCP Command Server with Security Layer
+Requires-Python: >=3.8
+Requires-Dist: pytest>=7.0
+Requires-Dist: pytest-asyncio
