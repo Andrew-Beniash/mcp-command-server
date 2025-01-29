@@ -7,10 +7,13 @@ from .security import (
     CommandConfirmation
 )
 
+from .server import CommandServer
+
 __all__ = [
     'CommandValidator',
     'ValidationError',
     'CommandSanitizer',
+    'CommandServer',
     'AuditLogger',
     'UserConfirmationHandler',
     'CommandConfirmation'
