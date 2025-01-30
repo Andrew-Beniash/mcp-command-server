@@ -346,6 +346,209 @@ tail -f ~/Library/Logs/Claude/mcp-command-server.log
 - Post in GitHub Discussions
 - Check Stack Overflow tags
 
+## Extending Commands
+
+### Adding New Commands
+
+There are two ways to extend the available commands:
+
+1. **Environment Configuration (Basic)**
+
+Add commands to the `ALLOWED_COMMANDS` environment variable:
+
+```bash
+# In your shell or .env file
+export ALLOWED_COMMANDS="ls,pwd,echo,cat,grep,find"
+
+# Or in claude_desktop_config.json
+{
+  "mcpServers": {
+    "command-server": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "mcp_command_server"],
+      "env": {
+        "ALLOWED_COMMANDS": "ls,pwd,echo,cat,grep,find"
+      }
+    }
+  }
+}
+```
+
+2. **Custom Command Configuration (Advanced)**
+
+Create a command configuration file (`commands.yaml`):
+
+```yaml
+commands:
+  ls:
+    allowed_flags: ["-l", "-a", "-h", "-t"]
+    allowed_paths: ["~/Documents", "~/Downloads"]
+    description: "List directory contents"
+
+  grep:
+    allowed_flags: ["-i", "-v", "-n"]
+    max_file_size: "10MB"
+    description: "Search file contents"
+
+  find:
+    allowed_flags: ["-name", "-type"]
+    excluded_paths: ["/etc", "/var"]
+    description: "Search for files"
+```
+
+Then reference it in your configuration:
+
+```json
+{
+  "mcpServers": {
+    "command-server": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "mcp_command_server"],
+      "env": {
+        "COMMAND_CONFIG": "/path/to/commands.yaml"
+      }
+    }
+  }
+}
+```
+
+### Security Considerations
+
+When adding new commands:
+
+1. **Risk Assessment**
+
+   - Evaluate what the command can access
+   - Consider potential misuse scenarios
+   - Review command flags and options
+
+2. **Access Control**
+
+   - Limit commands to specific directories
+   - Restrict dangerous flags
+   - Consider read-only vs write operations
+
+3. **Resource Limits**
+   - Set timeouts for long-running commands
+   - Limit output size
+   - Restrict file size for operations
+
+### Command Categories
+
+Here are common command categories you might want to add:
+
+1. **File Operations**
+
+   ```
+   cat, less, head, tail, grep, find
+   ```
+
+2. **Directory Operations**
+
+   ```
+   ls, pwd, cd, tree, du
+   ```
+
+3. **System Information**
+
+   ```
+   df, top, ps, free, uptime
+   ```
+
+4. **Network Tools**
+
+   ```
+   ping, curl, wget, netstat
+   ```
+
+5. **Text Processing**
+   ```
+   grep, sed, awk, sort, uniq
+   ```
+
+### Example: Adding Git Commands
+
+To add Git support:
+
+1. Add commands to allowlist:
+
+```bash
+export ALLOWED_COMMANDS="git-status,git-log,git-branch"
+```
+
+2. Create command configurations:
+
+```yaml
+commands:
+  git-status:
+    allowed_flags: ["--short", "--branch"]
+    working_dir: "~/projects"
+    description: "Show working tree status"
+
+  git-log:
+    allowed_flags: ["--oneline", "--graph", "-n"]
+    max_entries: 100
+    description: "Show commit logs"
+```
+
+3. Implement custom validation:
+
+```python
+@mcp.tool()
+async def execute_git_command(command: str, args: list[str]) -> str:
+    """Execute git commands safely.
+
+    Args:
+        command: Git subcommand (status, log, etc.)
+        args: Command arguments
+
+    Returns:
+        Command output
+    """
+    # Your implementation here
+```
+
+### Testing New Commands
+
+Always test new commands thoroughly:
+
+1. **Unit Tests**
+
+```python
+def test_git_command_validation():
+    # Test command validation
+    assert validate_git_command("status", ["--short"]) is True
+    assert validate_git_command("push", []) is False  # Dangerous command
+```
+
+2. **Integration Tests**
+
+```python
+async def test_git_command_execution():
+    # Test actual execution
+    result = await execute_git_command("status", ["--short"])
+    assert result.startswith("## main")
+```
+
+### Common Issues
+
+1. **Permission Errors**
+
+   - Make sure the server has necessary permissions
+   - Check file/directory ownership
+   - Verify user permissions
+
+2. **Command Not Found**
+
+   - Verify command is in system PATH
+   - Check command spelling
+   - Confirm command installation
+
+3. **Configuration Issues**
+   - Validate YAML syntax
+   - Check file paths
+   - Verify environment variables
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
